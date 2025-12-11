@@ -1,6 +1,11 @@
 # regru-go
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/mixanemca/regru-go.svg)](https://pkg.go.dev/github.com/mixanemca/regru-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mixanemca/regru-go)](https://goreportcard.com/report/github.com/mixanemca/regru-go)
+
 Go client library for working with reg.ru API.
+
+**📖 [Documentation](https://pkg.go.dev/github.com/mixanemca/regru-go)** | **🐛 [Issues](https://github.com/mixanemca/regru-go/issues)** | **💬 [Discussions](https://github.com/mixanemca/regru-go/discussions)**
 
 ## Description
 
