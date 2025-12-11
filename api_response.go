@@ -16,6 +16,8 @@ limitations under the License.
 
 package regru
 
+import "fmt"
+
 // APIResponse represents the base structure of reg.ru API response.
 type APIResponse struct {
 	Answer    interface{} `json:"answer,omitempty"`
@@ -34,9 +36,41 @@ type ServiceListAnswer struct {
 
 // Service represents a service in reg.ru API.
 type Service struct {
-	ServiceType string `json:"service_type,omitempty"`
-	Domain      string `json:"domain,omitempty"`
-	ServiceID   string `json:"service_id,omitempty"`
+	ServiceType string      `json:"service_type,omitempty"`
+	ServType    string      `json:"servtype,omitempty"` // Alternative field name used by some API methods
+	Domain      string      `json:"domain,omitempty"`
+	DName       string      `json:"dname,omitempty"`    // Alternative field name for domain name
+	ServiceID   interface{} `json:"service_id,omitempty"` // Can be int or string depending on API method
+}
+
+// GetServiceType returns the service type, checking both possible field names.
+func (s *Service) GetServiceType() string {
+	if s.ServiceType != "" {
+		return s.ServiceType
+	}
+	return s.ServType
+}
+
+// GetDomain returns the domain name, checking both possible field names.
+func (s *Service) GetDomain() string {
+	if s.Domain != "" {
+		return s.Domain
+	}
+	return s.DName
+}
+
+// GetServiceID returns the service ID as a string.
+func (s *Service) GetServiceID() string {
+	switch v := s.ServiceID.(type) {
+	case int:
+		return fmt.Sprintf("%d", v)
+	case float64:
+		return fmt.Sprintf("%.0f", v)
+	case string:
+		return v
+	default:
+		return fmt.Sprintf("%v", v)
+	}
 }
 
 // ZoneListResponse represents the response for zone/get_ns.

@@ -247,17 +247,17 @@ func TestClient_ListZones(t *testing.T) {
 				{
 					ServiceType: "domain",
 					Domain:      "example.com",
-					ServiceID:   "12345",
+					ServiceID:   12345,
 				},
 				{
 					ServiceType: "domain",
 					Domain:      "test.com",
-					ServiceID:   "67890",
+					ServiceID:   67890,
 				},
 				{
 					ServiceType: "hosting",
 					Domain:      "other.com",
-					ServiceID:   "11111",
+					ServiceID:   11111,
 				},
 			},
 		},
@@ -282,12 +282,12 @@ func TestClient_ListZonesByName(t *testing.T) {
 				{
 					ServiceType: "domain",
 					Domain:      "example.com",
-					ServiceID:   "12345",
+					ServiceID:   12345,
 				},
 				{
 					ServiceType: "domain",
 					Domain:      "test.com",
-					ServiceID:   "67890",
+					ServiceID:   67890,
 				},
 			},
 		},
@@ -732,7 +732,7 @@ func TestClient_ListRecordsByZoneID(t *testing.T) {
 				{
 					ServiceType: "domain",
 					Domain:      "example.com",
-					ServiceID:   "12345",
+					ServiceID:   12345,
 				},
 			},
 		},
@@ -789,7 +789,7 @@ func TestClient_ListRecordsByZoneID_ZoneNotFound(t *testing.T) {
 				{
 					ServiceType: "domain",
 					Domain:      "example.com",
-					ServiceID:   "12345",
+					ServiceID:   12345,
 				},
 			},
 		},

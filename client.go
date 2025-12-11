@@ -17,12 +17,13 @@ limitations under the License.
 package regru
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 )
 
@@ -95,19 +96,26 @@ func (c *Client) apiRequest(ctx context.Context, path string, apiReq APIRequest)
 	// Build URL
 	apiURL := fmt.Sprintf("%s/%s", c.baseURL, path)
 
-	// Serialize parameters to JSON for sending
+	// Serialize request structure to JSON for input_data parameter
 	jsonData, err := json.Marshal(apiReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request params: %w", err)
 	}
 
-	// Create HTTP request
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL, bytes.NewReader(jsonData))
+	// Create form data with required parameters
+	formData := url.Values{}
+	formData.Set("input_format", "json")
+	formData.Set("input_data", string(jsonData))
+	formData.Set("username", c.username)
+	formData.Set("password", c.password)
+
+	// Create HTTP request with form data
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL, strings.NewReader(formData.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	// Execute request
 	resp, err := c.httpClient.Do(httpReq)
@@ -362,10 +370,11 @@ func (c *Client) ListZones(ctx context.Context) ([]Zone, error) {
 
 	var zones []Zone
 	for _, service := range resp.Answer.Services {
-		if service.ServiceType == "domain" {
+		serviceType := service.GetServiceType()
+		if serviceType == "domain" {
 			zones = append(zones, Zone{
-				Name: service.Domain,
-				ID:   service.ServiceID,
+				Name: service.GetDomain(),
+				ID:   service.GetServiceID(),
 			})
 		}
 	}
