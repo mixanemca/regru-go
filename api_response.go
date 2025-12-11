@@ -39,7 +39,7 @@ type Service struct {
 	ServiceType string      `json:"service_type,omitempty"`
 	ServType    string      `json:"servtype,omitempty"` // Alternative field name used by some API methods
 	Domain      string      `json:"domain,omitempty"`
-	DName       string      `json:"dname,omitempty"`    // Alternative field name for domain name
+	DName       string      `json:"dname,omitempty"`      // Alternative field name for domain name
 	ServiceID   interface{} `json:"service_id,omitempty"` // Can be int or string depending on API method
 }
 
@@ -73,7 +73,7 @@ func (s *Service) GetServiceID() string {
 	}
 }
 
-// ZoneListResponse represents the response for zone/get_ns.
+// ZoneListResponse represents the response for zone/get_ns (for backward compatibility).
 type ZoneListResponse struct {
 	Answer ZoneListAnswer `json:"answer,omitempty"`
 }
@@ -83,19 +83,71 @@ type ZoneListAnswer struct {
 	Domains []DomainWithRecords `json:"domains,omitempty"`
 }
 
-// DomainWithRecords represents a domain with its DNS records.
+// DomainWithRecords represents a domain with its DNS records (for zone/get_ns).
 type DomainWithRecords struct {
 	DName  string     `json:"dname,omitempty"`
 	NSList []NSRecord `json:"ns_list,omitempty"`
 }
 
-// NSRecord represents a DNS record in reg.ru API format.
+// NSRecord represents a DNS record in reg.ru API format (for zone/get_ns).
 type NSRecord struct {
 	Subdomain string `json:"subdomain,omitempty"`
 	Type      string `json:"type,omitempty"`
 	Content   string `json:"content,omitempty"`
 	TTL       int    `json:"ttl,omitempty"`
 	DNSID     string `json:"dns_id,omitempty"`
+}
+
+// ZoneGetResourceRecordsResponse represents the response for zone/get_resource_records.
+type ZoneGetResourceRecordsResponse struct {
+	Answer ZoneGetResourceRecordsAnswer `json:"answer,omitempty"`
+	Result string                       `json:"result,omitempty"`
+}
+
+// ZoneGetResourceRecordsAnswer contains the list of domains with their resource records.
+type ZoneGetResourceRecordsAnswer struct {
+	Domains []DomainWithResourceRecords `json:"domains,omitempty"`
+}
+
+// DomainWithResourceRecords represents a domain with its resource records.
+type DomainWithResourceRecords struct {
+	DName     string           `json:"dname,omitempty"`
+	Result    string           `json:"result,omitempty"`
+	RRList    []ResourceRecord `json:"rrs,omitempty"`
+	ServiceID string           `json:"service_id,omitempty"`
+	SOA       *SOAInfo         `json:"soa,omitempty"`
+}
+
+// ResourceRecord represents a DNS resource record in zone/get_resource_records format.
+type ResourceRecord struct {
+	Content string      `json:"content,omitempty"`
+	Prio    interface{} `json:"prio,omitempty"` // Can be number or string
+	Rectype string      `json:"rectype,omitempty"`
+	State   string      `json:"state,omitempty"`
+	Subname string      `json:"subname,omitempty"`
+}
+
+// GetPrio returns the priority as a string.
+func (r *ResourceRecord) GetPrio() string {
+	if r.Prio == nil {
+		return ""
+	}
+	switch v := r.Prio.(type) {
+	case int:
+		return fmt.Sprintf("%d", v)
+	case float64:
+		return fmt.Sprintf("%.0f", v)
+	case string:
+		return v
+	default:
+		return fmt.Sprintf("%v", v)
+	}
+}
+
+// SOAInfo represents SOA record information.
+type SOAInfo struct {
+	MinimumTTL string `json:"minimum_ttl,omitempty"`
+	TTL        string `json:"ttl,omitempty"`
 }
 
 // AddNSResponse represents the response for zone/add_ns.

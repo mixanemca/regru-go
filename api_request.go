@@ -132,3 +132,14 @@ type ZoneGetNSRequest struct {
 	BaseRequest
 	Domains []string `json:"domains"`
 }
+
+// ZoneGetResourceRecordsRequest represents parameters for zone/get_resource_records API method.
+type ZoneGetResourceRecordsRequest struct {
+	BaseRequest
+	Domains []ZoneGetResourceRecordsDomain `json:"domains"`
+}
+
+// ZoneGetResourceRecordsDomain represents a domain in get_resource_records request.
+type ZoneGetResourceRecordsDomain struct {
+	DName string `json:"dname"`
+}

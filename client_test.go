@@ -305,37 +305,39 @@ func TestClient_ListZonesByName(t *testing.T) {
 }
 
 func TestClient_ListRecords(t *testing.T) {
-	response := ZoneListResponse{
-		Answer: ZoneListAnswer{
-			Domains: []DomainWithRecords{
+	response := ZoneGetResourceRecordsResponse{
+		Answer: ZoneGetResourceRecordsAnswer{
+			Domains: []DomainWithResourceRecords{
 				{
-					DName: "example.com",
-					NSList: []NSRecord{
+					DName:  "example.com",
+					Result: "success",
+					RRList: []ResourceRecord{
 						{
-							Subdomain: "www",
-							Type:      "A",
-							Content:   "192.0.2.1",
-							TTL:       3600,
-							DNSID:     "11111",
+							Subname: "www",
+							Rectype: "A",
+							Content: "192.0.2.1",
+							Prio:    "0",
+							State:   "A",
 						},
 						{
-							Subdomain: "@",
-							Type:      "A",
-							Content:   "192.0.2.2",
-							TTL:       3600,
-							DNSID:     "22222",
+							Subname: "@",
+							Rectype: "A",
+							Content: "192.0.2.2",
+							Prio:    "0",
+							State:   "A",
 						},
 						{
-							Subdomain: "mail",
-							Type:      "MX",
-							Content:   "10 mail.example.com",
-							TTL:       3600,
-							DNSID:     "33333",
+							Subname: "mail",
+							Rectype: "MX",
+							Content: "10 mail.example.com",
+							Prio:    "10",
+							State:   "A",
 						},
 					},
 				},
 			},
 		},
+		Result: "success",
 	}
 
 	server := setupTestServer(t, response, http.StatusOK)
@@ -355,37 +357,39 @@ func TestClient_ListRecords(t *testing.T) {
 }
 
 func TestClient_ListRecords_WithFilters(t *testing.T) {
-	response := ZoneListResponse{
-		Answer: ZoneListAnswer{
-			Domains: []DomainWithRecords{
+	response := ZoneGetResourceRecordsResponse{
+		Answer: ZoneGetResourceRecordsAnswer{
+			Domains: []DomainWithResourceRecords{
 				{
-					DName: "example.com",
-					NSList: []NSRecord{
+					DName:  "example.com",
+					Result: "success",
+					RRList: []ResourceRecord{
 						{
-							Subdomain: "www",
-							Type:      "A",
-							Content:   "192.0.2.1",
-							TTL:       3600,
-							DNSID:     "11111",
+							Subname: "www",
+							Rectype: "A",
+							Content: "192.0.2.1",
+							Prio:    "0",
+							State:   "A",
 						},
 						{
-							Subdomain: "@",
-							Type:      "A",
-							Content:   "192.0.2.2",
-							TTL:       3600,
-							DNSID:     "22222",
+							Subname: "@",
+							Rectype: "A",
+							Content: "192.0.2.2",
+							Prio:    "0",
+							State:   "A",
 						},
 						{
-							Subdomain: "mail",
-							Type:      "MX",
-							Content:   "10 mail.example.com",
-							TTL:       3600,
-							DNSID:     "33333",
+							Subname: "mail",
+							Rectype: "MX",
+							Content: "10 mail.example.com",
+							Prio:    "10",
+							State:   "A",
 						},
 					},
 				},
 			},
 		},
+		Result: "success",
 	}
 
 	server := setupTestServer(t, response, http.StatusOK)
@@ -407,30 +411,32 @@ func TestClient_ListRecords_WithFilters(t *testing.T) {
 }
 
 func TestClient_GetRRByName(t *testing.T) {
-	response := ZoneListResponse{
-		Answer: ZoneListAnswer{
-			Domains: []DomainWithRecords{
+	response := ZoneGetResourceRecordsResponse{
+		Answer: ZoneGetResourceRecordsAnswer{
+			Domains: []DomainWithResourceRecords{
 				{
-					DName: "example.com",
-					NSList: []NSRecord{
+					DName:  "example.com",
+					Result: "success",
+					RRList: []ResourceRecord{
 						{
-							Subdomain: "www",
-							Type:      "A",
-							Content:   "192.0.2.1",
-							TTL:       3600,
-							DNSID:     "11111",
+							Subname: "www",
+							Rectype: "A",
+							Content: "192.0.2.1",
+							Prio:    "0",
+							State:   "A",
 						},
 						{
-							Subdomain: "@",
-							Type:      "A",
-							Content:   "192.0.2.2",
-							TTL:       3600,
-							DNSID:     "22222",
+							Subname: "@",
+							Rectype: "A",
+							Content: "192.0.2.2",
+							Prio:    "0",
+							State:   "A",
 						},
 					},
 				},
 			},
 		},
+		Result: "success",
 	}
 
 	server := setupTestServer(t, response, http.StatusOK)
@@ -445,23 +451,25 @@ func TestClient_GetRRByName(t *testing.T) {
 }
 
 func TestClient_GetRRByName_NotFound(t *testing.T) {
-	response := ZoneListResponse{
-		Answer: ZoneListAnswer{
-			Domains: []DomainWithRecords{
+	response := ZoneGetResourceRecordsResponse{
+		Answer: ZoneGetResourceRecordsAnswer{
+			Domains: []DomainWithResourceRecords{
 				{
-					DName: "example.com",
-					NSList: []NSRecord{
+					DName:  "example.com",
+					Result: "success",
+					RRList: []ResourceRecord{
 						{
-							Subdomain: "www",
-							Type:      "A",
-							Content:   "192.0.2.1",
-							TTL:       3600,
-							DNSID:     "11111",
+							Subname: "www",
+							Rectype: "A",
+							Content: "192.0.2.1",
+							Prio:    "0",
+							State:   "A",
 						},
 					},
 				},
 			},
 		},
+		Result: "success",
 	}
 
 	server := setupTestServer(t, response, http.StatusOK)
@@ -739,23 +747,25 @@ func TestClient_ListRecordsByZoneID(t *testing.T) {
 	}
 
 	// Second call - list records
-	recordsResponse := ZoneListResponse{
-		Answer: ZoneListAnswer{
-			Domains: []DomainWithRecords{
+	recordsResponse := ZoneGetResourceRecordsResponse{
+		Answer: ZoneGetResourceRecordsAnswer{
+			Domains: []DomainWithResourceRecords{
 				{
-					DName: "example.com",
-					NSList: []NSRecord{
+					DName:  "example.com",
+					Result: "success",
+					RRList: []ResourceRecord{
 						{
-							Subdomain: "www",
-							Type:      "A",
-							Content:   "192.0.2.1",
-							TTL:       3600,
-							DNSID:     "11111",
+							Subname: "www",
+							Rectype: "A",
+							Content: "192.0.2.1",
+							Prio:    "0",
+							State:   "A",
 						},
 					},
 				},
 			},
 		},
+		Result: "success",
 	}
 
 	callCount := 0

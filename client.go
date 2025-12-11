@@ -407,18 +407,22 @@ func (c *Client) ListRecords(ctx context.Context, params ListDNSRecordsParams) (
 	}
 
 	// Prepare API request
-	apiReq := ZoneGetNSRequest{
+	apiReq := ZoneGetResourceRecordsRequest{
 		BaseRequest: BaseRequest{},
-		Domains:     []string{zoneName},
+		Domains: []ZoneGetResourceRecordsDomain{
+			{
+				DName: zoneName,
+			},
+		},
 	}
 
-	body, err := c.apiRequest(ctx, "zone/get_ns", &apiReq)
+	body, err := c.apiRequest(ctx, "zone/get_resource_records", &apiReq)
 	if err != nil {
 		return nil, err
 	}
 
 	// Parse response
-	var resp ZoneListResponse
+	var resp ZoneGetResourceRecordsResponse
 	if err := json.Unmarshal(body, &resp); err != nil {
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
@@ -426,13 +430,14 @@ func (c *Client) ListRecords(ctx context.Context, params ListDNSRecordsParams) (
 	var records []DNSRecord
 	for _, domain := range resp.Answer.Domains {
 		if domain.DName == zoneName {
-			for _, nsRecord := range domain.NSList {
+			for _, rr := range domain.RRList {
 				record := DNSRecord{
-					Name:    nsRecord.Subdomain,
-					Type:    nsRecord.Type,
-					Content: nsRecord.Content,
-					TTL:     nsRecord.TTL,
-					ID:      nsRecord.DNSID,
+					Name:    rr.Subname,
+					Type:    rr.Rectype,
+					Content: rr.Content,
+					// TTL and ID are not available in get_resource_records response
+					// TTL:     rr.TTL,
+					// ID:      rr.DNSID,
 				}
 
 				// Apply filters if specified
