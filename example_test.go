@@ -26,17 +26,15 @@ import (
 
 func ExampleNewClient() {
 	// Create a new client with default settings
-	client := regru.NewClient("your-username", "your-password")
+	_ = regru.NewClient("your-username", "your-password")
 
 	// Or create with custom options
-	client = regru.NewClient(
+	_ = regru.NewClient(
 		"your-username",
 		"your-password",
 		regru.WithBaseURL("https://api.reg.ru/api/regru2"),
 		regru.WithTimeout(60*time.Second),
 	)
-
-	_ = client
 }
 
 func ExampleClient_ListZones() {

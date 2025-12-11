@@ -114,7 +114,9 @@ func (c *Client) apiRequest(ctx context.Context, path string, apiReq APIRequest)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	// Check status code
 	if resp.StatusCode != http.StatusOK {

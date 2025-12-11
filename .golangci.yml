@@ -1,15 +1,19 @@
+version: 2
+
 linters:
   enable:
     - errcheck
-    - gosimple
     - govet
     - ineffassign
     - staticcheck
     - unused
+
+formatters:
+  enable:
     - gofmt
     - goimports
 
-linters-settings:
+formatters-settings:
   gofmt:
     simplify: true
   goimports:
