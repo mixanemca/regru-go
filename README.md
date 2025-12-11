@@ -163,7 +163,9 @@ if err != nil {
 
 ## API Documentation
 
-Official reg.ru API documentation: https://www.reg.ru/reseller/api2doc
+- **📖 Package Documentation**: [pkg.go.dev/github.com/mixanemca/regru-go](https://pkg.go.dev/github.com/mixanemca/regru-go)
+- **🔗 Official reg.ru API**: [www.reg.ru/reseller/api2doc](https://www.reg.ru/reseller/api2doc)
+- **💻 Source Code**: [github.com/mixanemca/regru-go](https://github.com/mixanemca/regru-go)
 
 ## License
 
