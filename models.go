@@ -24,6 +24,7 @@ const (
 	RecordTypeCNAME = "CNAME"
 	RecordTypeMX    = "MX"
 	RecordTypeNS    = "NS"
+	RecordTypeSRV   = "SRV"
 	RecordTypeTXT   = "TXT"
 )
 
@@ -47,6 +48,9 @@ type CreateDNSRecordParams struct {
 	Type     string `json:"type,omitempty"`
 	ZoneID   string `json:"zone_id,omitempty"`
 	ZoneName string `json:"zone_name,omitempty"`
+	// SRV record specific fields
+	Priority int `json:"priority,omitempty"` // For SRV records
+	Port     int `json:"port,omitempty"`     // For SRV records
 }
 
 // ListDNSRecordsParams params for list DNS records.

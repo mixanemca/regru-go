@@ -113,6 +113,18 @@ type AddTXTRequest struct {
 	TTL       int              `json:"ttl,omitempty"`
 }
 
+// AddSRVRequest represents parameters for zone/add_srv API method.
+// For add_srv, service, priority, port, and target are at the request level, not in domains.
+type AddSRVRequest struct {
+	BaseRequest
+	Domains  []AddAliasDomain `json:"domains"`
+	Service  string           `json:"service"`
+	Priority string           `json:"priority"`
+	Port     string           `json:"port"`
+	Target   string           `json:"target"`
+	TTL      int              `json:"ttl,omitempty"`
+}
+
 // RemoveRecordDomain represents a domain in remove record requests.
 type RemoveRecordDomain struct {
 	DName string `json:"dname"`
@@ -130,6 +142,11 @@ type RemoveRecordRequest struct {
 
 // RemoveNSRequest represents parameters for zone/remove_ns API method.
 type RemoveNSRequest struct {
+	RemoveRecordRequest
+}
+
+// RemoveSRVRequest represents parameters for zone/remove_srv API method.
+type RemoveSRVRequest struct {
 	RemoveRecordRequest
 }
 

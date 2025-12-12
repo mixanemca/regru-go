@@ -162,6 +162,8 @@ func getAddRecordPath(recordType string) (string, error) {
 		return "zone/add_mx", nil
 	case RecordTypeNS:
 		return "zone/add_ns", nil
+	case RecordTypeSRV:
+		return "zone/add_srv", nil
 	case RecordTypeTXT:
 		return "zone/add_txt", nil
 	default:
@@ -173,7 +175,7 @@ func getAddRecordPath(recordType string) (string, error) {
 // According to reg.ru API documentation, all record types use the same endpoint: zone/remove_record
 func getRemoveRecordPath(recordType string) (string, error) {
 	switch recordType {
-	case RecordTypeA, RecordTypeAAAA, RecordTypeCNAME, RecordTypeMX, RecordTypeNS, RecordTypeTXT:
+	case RecordTypeA, RecordTypeAAAA, RecordTypeCNAME, RecordTypeMX, RecordTypeNS, RecordTypeSRV, RecordTypeTXT:
 		return "zone/remove_record", nil
 	default:
 		return "", &UnsupportedRecordTypeError{RecordType: recordType}
@@ -253,6 +255,22 @@ func createAddRecordRequest(zone string, params CreateDNSRecordParams) (APIReque
 			nsReq.TTL = params.TTL
 		}
 		return nsReq, nil
+	case RecordTypeSRV:
+		// For SRV records (add_srv), service, priority, port, and target are at request level
+		srvReq := &AddSRVRequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Service:  params.Name,
+			Priority: fmt.Sprintf("%d", params.Priority),
+			Port:     fmt.Sprintf("%d", params.Port),
+			Target:   params.Content,
+		}
+		if params.TTL > 0 {
+			srvReq.TTL = params.TTL
+		}
+		return srvReq, nil
 	case RecordTypeTXT:
 		// For TXT records (add_txt), text and subdomain are at request level
 		txtReq := &AddTXTRequest{
@@ -298,6 +316,8 @@ func createRemoveRecordRequest(zone string, rr DNSRecord) (APIRequest, error) {
 		return &RemoveMXRequest{RemoveRecordRequest: *req}, nil
 	case RecordTypeNS:
 		return &RemoveNSRequest{RemoveRecordRequest: *req}, nil
+	case RecordTypeSRV:
+		return &RemoveSRVRequest{RemoveRecordRequest: *req}, nil
 	case RecordTypeTXT:
 		return &RemoveTXTRequest{RemoveRecordRequest: *req}, nil
 	default:
