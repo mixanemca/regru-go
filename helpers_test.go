@@ -34,37 +34,37 @@ func TestGetAddRecordPath(t *testing.T) {
 	}{
 		{
 			name:       "A record",
-			recordType: "A",
+			recordType: RecordTypeA,
 			wantPath:   "zone/add_alias",
 			wantErr:    false,
 		},
 		{
 			name:       "AAAA record",
-			recordType: "AAAA",
+			recordType: RecordTypeAAAA,
 			wantPath:   "zone/add_aaaa",
 			wantErr:    false,
 		},
 		{
 			name:       "CNAME record",
-			recordType: "CNAME",
+			recordType: RecordTypeCNAME,
 			wantPath:   "zone/add_cname",
 			wantErr:    false,
 		},
 		{
 			name:       "MX record",
-			recordType: "MX",
+			recordType: RecordTypeMX,
 			wantPath:   "zone/add_mx",
 			wantErr:    false,
 		},
 		{
 			name:       "NS record",
-			recordType: "NS",
+			recordType: RecordTypeNS,
 			wantPath:   "zone/add_ns",
 			wantErr:    false,
 		},
 		{
 			name:       "TXT record",
-			recordType: "TXT",
+			recordType: RecordTypeTXT,
 			wantPath:   "zone/add_txt",
 			wantErr:    false,
 		},
@@ -101,38 +101,38 @@ func TestGetRemoveRecordPath(t *testing.T) {
 	}{
 		{
 			name:       "A record",
-			recordType: "A",
-			wantPath:   "zone/remove_alias",
+			recordType: RecordTypeA,
+			wantPath:   "zone/remove_record",
 			wantErr:    false,
 		},
 		{
 			name:       "AAAA record",
-			recordType: "AAAA",
-			wantPath:   "zone/remove_aaaa",
+			recordType: RecordTypeAAAA,
+			wantPath:   "zone/remove_record",
 			wantErr:    false,
 		},
 		{
 			name:       "CNAME record",
-			recordType: "CNAME",
-			wantPath:   "zone/remove_cname",
+			recordType: RecordTypeCNAME,
+			wantPath:   "zone/remove_record",
 			wantErr:    false,
 		},
 		{
 			name:       "MX record",
-			recordType: "MX",
-			wantPath:   "zone/remove_mx",
+			recordType: RecordTypeMX,
+			wantPath:   "zone/remove_record",
 			wantErr:    false,
 		},
 		{
 			name:       "NS record",
-			recordType: "NS",
-			wantPath:   "zone/remove_ns",
+			recordType: RecordTypeNS,
+			wantPath:   "zone/remove_record",
 			wantErr:    false,
 		},
 		{
 			name:       "TXT record",
-			recordType: "TXT",
-			wantPath:   "zone/remove_txt",
+			recordType: RecordTypeTXT,
+			wantPath:   "zone/remove_record",
 			wantErr:    false,
 		},
 		{
@@ -172,12 +172,12 @@ func TestCreateAddRecordRequest(t *testing.T) {
 			zone: "example.com",
 			params: CreateDNSRecordParams{
 				Name:    "www",
-				Type:    "A",
+				Type:    RecordTypeA,
 				Content: "192.0.2.1",
 				TTL:     3600,
 			},
 			wantErr:  false,
-			wantType: "A",
+			wantType: RecordTypeA,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*AddAliasRequest)
 				return ok
@@ -188,12 +188,12 @@ func TestCreateAddRecordRequest(t *testing.T) {
 			zone: "example.com",
 			params: CreateDNSRecordParams{
 				Name:    "www",
-				Type:    "AAAA",
+				Type:    RecordTypeAAAA,
 				Content: "2001:db8::1",
 				TTL:     3600,
 			},
 			wantErr:  false,
-			wantType: "AAAA",
+			wantType: RecordTypeAAAA,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*AddAAAARequest)
 				return ok
@@ -204,12 +204,12 @@ func TestCreateAddRecordRequest(t *testing.T) {
 			zone: "example.com",
 			params: CreateDNSRecordParams{
 				Name:    "blog",
-				Type:    "CNAME",
+				Type:    RecordTypeCNAME,
 				Content: "example.github.io",
 				TTL:     3600,
 			},
 			wantErr:  false,
-			wantType: "CNAME",
+			wantType: RecordTypeCNAME,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*AddCNAMERequest)
 				return ok
@@ -220,12 +220,12 @@ func TestCreateAddRecordRequest(t *testing.T) {
 			zone: "example.com",
 			params: CreateDNSRecordParams{
 				Name:    "@",
-				Type:    "MX",
+				Type:    RecordTypeMX,
 				Content: "10 mail.example.com",
 				TTL:     3600,
 			},
 			wantErr:  false,
-			wantType: "MX",
+			wantType: RecordTypeMX,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*AddMXRequest)
 				return ok
@@ -236,12 +236,12 @@ func TestCreateAddRecordRequest(t *testing.T) {
 			zone: "example.com",
 			params: CreateDNSRecordParams{
 				Name:    "@",
-				Type:    "NS",
+				Type:    RecordTypeNS,
 				Content: "ns1.example.com",
 				TTL:     3600,
 			},
 			wantErr:  false,
-			wantType: "NS",
+			wantType: RecordTypeNS,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*AddNSRequest)
 				return ok
@@ -252,12 +252,12 @@ func TestCreateAddRecordRequest(t *testing.T) {
 			zone: "example.com",
 			params: CreateDNSRecordParams{
 				Name:    "@",
-				Type:    "TXT",
+				Type:    RecordTypeTXT,
 				Content: "v=spf1 include:_spf.example.com ~all",
 				TTL:     3600,
 			},
 			wantErr:  false,
-			wantType: "TXT",
+			wantType: RecordTypeTXT,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*AddTXTRequest)
 				return ok
@@ -307,11 +307,11 @@ func TestCreateRemoveRecordRequest(t *testing.T) {
 			zone: "example.com",
 			record: DNSRecord{
 				Name:    "www",
-				Type:    "A",
+				Type:    RecordTypeA,
 				Content: "192.0.2.1",
 			},
 			wantErr:  false,
-			wantType: "A",
+			wantType: RecordTypeA,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*RemoveAliasRequest)
 				return ok
@@ -322,11 +322,11 @@ func TestCreateRemoveRecordRequest(t *testing.T) {
 			zone: "example.com",
 			record: DNSRecord{
 				Name:    "www",
-				Type:    "AAAA",
+				Type:    RecordTypeAAAA,
 				Content: "2001:db8::1",
 			},
 			wantErr:  false,
-			wantType: "AAAA",
+			wantType: RecordTypeAAAA,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*RemoveAAAARequest)
 				return ok
@@ -337,11 +337,11 @@ func TestCreateRemoveRecordRequest(t *testing.T) {
 			zone: "example.com",
 			record: DNSRecord{
 				Name:    "blog",
-				Type:    "CNAME",
+				Type:    RecordTypeCNAME,
 				Content: "example.github.io",
 			},
 			wantErr:  false,
-			wantType: "CNAME",
+			wantType: RecordTypeCNAME,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*RemoveCNAMERequest)
 				return ok
@@ -352,11 +352,11 @@ func TestCreateRemoveRecordRequest(t *testing.T) {
 			zone: "example.com",
 			record: DNSRecord{
 				Name:    "@",
-				Type:    "MX",
+				Type:    RecordTypeMX,
 				Content: "10 mail.example.com",
 			},
 			wantErr:  false,
-			wantType: "MX",
+			wantType: RecordTypeMX,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*RemoveMXRequest)
 				return ok
@@ -367,11 +367,11 @@ func TestCreateRemoveRecordRequest(t *testing.T) {
 			zone: "example.com",
 			record: DNSRecord{
 				Name:    "@",
-				Type:    "NS",
+				Type:    RecordTypeNS,
 				Content: "ns1.example.com",
 			},
 			wantErr:  false,
-			wantType: "NS",
+			wantType: RecordTypeNS,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*RemoveNSRequest)
 				return ok
@@ -382,11 +382,11 @@ func TestCreateRemoveRecordRequest(t *testing.T) {
 			zone: "example.com",
 			record: DNSRecord{
 				Name:    "@",
-				Type:    "TXT",
+				Type:    RecordTypeTXT,
 				Content: "v=spf1 include:_spf.example.com ~all",
 			},
 			wantErr:  false,
-			wantType: "TXT",
+			wantType: RecordTypeTXT,
 			checkType: func(req APIRequest) bool {
 				_, ok := req.(*RemoveTXTRequest)
 				return ok

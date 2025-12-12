@@ -88,7 +88,7 @@ func TestClient_AddRR(t *testing.T) {
 	}{
 		{
 			name:       "add A record",
-			recordType: "A",
+			recordType: RecordTypeA,
 			content:    "192.0.2.1",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -106,7 +106,7 @@ func TestClient_AddRR(t *testing.T) {
 		},
 		{
 			name:       "add AAAA record",
-			recordType: "AAAA",
+			recordType: RecordTypeAAAA,
 			content:    "2001:db8::1",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -124,7 +124,7 @@ func TestClient_AddRR(t *testing.T) {
 		},
 		{
 			name:       "add CNAME record",
-			recordType: "CNAME",
+			recordType: RecordTypeCNAME,
 			content:    "example.github.io",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -142,7 +142,7 @@ func TestClient_AddRR(t *testing.T) {
 		},
 		{
 			name:       "add MX record",
-			recordType: "MX",
+			recordType: RecordTypeMX,
 			content:    "10 mail.example.com",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -160,7 +160,7 @@ func TestClient_AddRR(t *testing.T) {
 		},
 		{
 			name:       "add NS record",
-			recordType: "NS",
+			recordType: RecordTypeNS,
 			content:    "ns1.example.com",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -178,7 +178,7 @@ func TestClient_AddRR(t *testing.T) {
 		},
 		{
 			name:       "add TXT record",
-			recordType: "TXT",
+			recordType: RecordTypeTXT,
 			content:    "v=spf1 include:_spf.example.com ~all",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -399,7 +399,7 @@ func TestClient_ListRecords_WithFilters(t *testing.T) {
 
 	params := ListDNSRecordsParams{
 		ZoneName: "example.com",
-		Type:     "A", // Filter by type
+		Type:     RecordTypeA, // Filter by type
 	}
 
 	records, err := client.ListRecords(context.Background(), params)
@@ -494,7 +494,7 @@ func TestClient_DeleteRR(t *testing.T) {
 	}{
 		{
 			name:       "delete A record",
-			recordType: "A",
+			recordType: RecordTypeA,
 			content:    "192.0.2.1",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -510,7 +510,7 @@ func TestClient_DeleteRR(t *testing.T) {
 		},
 		{
 			name:       "delete AAAA record",
-			recordType: "AAAA",
+			recordType: RecordTypeAAAA,
 			content:    "2001:db8::1",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -526,7 +526,7 @@ func TestClient_DeleteRR(t *testing.T) {
 		},
 		{
 			name:       "delete CNAME record",
-			recordType: "CNAME",
+			recordType: RecordTypeCNAME,
 			content:    "example.github.io",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -542,7 +542,7 @@ func TestClient_DeleteRR(t *testing.T) {
 		},
 		{
 			name:       "delete MX record",
-			recordType: "MX",
+			recordType: RecordTypeMX,
 			content:    "10 mail.example.com",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -558,7 +558,7 @@ func TestClient_DeleteRR(t *testing.T) {
 		},
 		{
 			name:       "delete NS record",
-			recordType: "NS",
+			recordType: RecordTypeNS,
 			content:    "ns1.example.com",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -574,7 +574,7 @@ func TestClient_DeleteRR(t *testing.T) {
 		},
 		{
 			name:       "delete TXT record",
-			recordType: "TXT",
+			recordType: RecordTypeTXT,
 			content:    "v=spf1 include:_spf.example.com ~all",
 			response: AddNSResponse{
 				Answer: AddNSAnswer{
@@ -675,7 +675,7 @@ func TestClient_UpdateRR(t *testing.T) {
 
 	record := DNSRecord{
 		Name:    "www",
-		Type:    "A",
+		Type:    RecordTypeA,
 		Content: "192.0.2.3",
 		TTL:     3600,
 	}
