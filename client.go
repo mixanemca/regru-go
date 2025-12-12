@@ -152,17 +152,17 @@ func (c *Client) apiRequest(ctx context.Context, path string, apiReq APIRequest)
 // getAddRecordPath returns the API path for adding a record of the specified type.
 func getAddRecordPath(recordType string) (string, error) {
 	switch recordType {
-	case "A":
+	case RecordTypeA:
 		return "zone/add_alias", nil
-	case "AAAA":
+	case RecordTypeAAAA:
 		return "zone/add_aaaa", nil
-	case "CNAME":
+	case RecordTypeCNAME:
 		return "zone/add_cname", nil
-	case "MX":
+	case RecordTypeMX:
 		return "zone/add_mx", nil
-	case "NS":
+	case RecordTypeNS:
 		return "zone/add_ns", nil
-	case "TXT":
+	case RecordTypeTXT:
 		return "zone/add_txt", nil
 	default:
 		return "", &UnsupportedRecordTypeError{RecordType: recordType}
@@ -170,20 +170,11 @@ func getAddRecordPath(recordType string) (string, error) {
 }
 
 // getRemoveRecordPath returns the API path for removing a record of the specified type.
+// According to reg.ru API documentation, all record types use the same endpoint: zone/remove_record
 func getRemoveRecordPath(recordType string) (string, error) {
 	switch recordType {
-	case "A":
-		return "zone/remove_alias", nil
-	case "AAAA":
-		return "zone/remove_aaaa", nil
-	case "CNAME":
-		return "zone/remove_cname", nil
-	case "MX":
-		return "zone/remove_mx", nil
-	case "NS":
-		return "zone/remove_ns", nil
-	case "TXT":
-		return "zone/remove_txt", nil
+	case RecordTypeA, RecordTypeAAAA, RecordTypeCNAME, RecordTypeMX, RecordTypeNS, RecordTypeTXT:
+		return "zone/remove_record", nil
 	default:
 		return "", &UnsupportedRecordTypeError{RecordType: recordType}
 	}
@@ -191,69 +182,124 @@ func getRemoveRecordPath(recordType string) (string, error) {
 
 // createAddRecordRequest creates an appropriate request structure based on record type.
 func createAddRecordRequest(zone string, params CreateDNSRecordParams) (APIRequest, error) {
-	domain := AddRecordDomain{
-		DName:     zone,
-		Subdomain: params.Name,
-		Content:   params.Content,
-	}
-
-	baseReq := AddRecordRequest{
-		BaseRequest: BaseRequest{},
-		Domains:     []AddRecordDomain{domain},
-	}
-
-	if params.TTL > 0 {
-		baseReq.TTL = params.TTL
-	}
-
 	switch params.Type {
-	case "A":
-		return &AddAliasRequest{AddRecordRequest: baseReq}, nil
-	case "AAAA":
-		return &AddAAAARequest{AddRecordRequest: baseReq}, nil
-	case "CNAME":
-		return &AddCNAMERequest{AddRecordRequest: baseReq}, nil
-	case "MX":
-		// MX records may have priority in content (e.g., "10 mail.example.com")
-		mxReq := &AddMXRequest{AddRecordRequest: baseReq}
-		// Try to extract priority from content if format is "priority hostname"
-		// This is a simple implementation - may need adjustment based on actual API
+	case RecordTypeA:
+		// For A records (add_alias), ipaddr and subdomain are at request level
+		aliasReq := &AddAliasRequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Subdomain: params.Name,
+			IPAddr:    params.Content,
+		}
+		if params.TTL > 0 {
+			aliasReq.TTL = params.TTL
+		}
+		return aliasReq, nil
+	case RecordTypeAAAA:
+		// For AAAA records (add_aaaa), ipaddr and subdomain are at request level
+		aaaaReq := &AddAAAARequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Subdomain: params.Name,
+			IPAddr:    params.Content,
+		}
+		if params.TTL > 0 {
+			aaaaReq.TTL = params.TTL
+		}
+		return aaaaReq, nil
+	case RecordTypeCNAME:
+		// For CNAME records (add_cname), canonical_name and subdomain are at request level
+		cnameReq := &AddCNAMERequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Subdomain:     params.Name,
+			CanonicalName: params.Content,
+		}
+		if params.TTL > 0 {
+			cnameReq.TTL = params.TTL
+		}
+		return cnameReq, nil
+	case RecordTypeMX:
+		// For MX records (add_mx), mail_server and subdomain are at request level
+		mxReq := &AddMXRequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Subdomain:  params.Name,
+			MailServer: params.Content,
+		}
+		if params.TTL > 0 {
+			mxReq.TTL = params.TTL
+		}
 		return mxReq, nil
-	case "NS":
-		return &AddNSRequest{AddRecordRequest: baseReq}, nil
-	case "TXT":
-		return &AddTXTRequest{AddRecordRequest: baseReq}, nil
+	case RecordTypeNS:
+		// For NS records (add_ns), dns_server and subdomain are at request level
+		nsReq := &AddNSRequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Subdomain: params.Name,
+			DNSServer: params.Content,
+		}
+		if params.TTL > 0 {
+			nsReq.TTL = params.TTL
+		}
+		return nsReq, nil
+	case RecordTypeTXT:
+		// For TXT records (add_txt), text and subdomain are at request level
+		txtReq := &AddTXTRequest{
+			BaseRequest: BaseRequest{},
+			Domains: []AddAliasDomain{
+				{DName: zone},
+			},
+			Subdomain: params.Name,
+			Text:      params.Content,
+		}
+		if params.TTL > 0 {
+			txtReq.TTL = params.TTL
+		}
+		return txtReq, nil
 	default:
 		return nil, &UnsupportedRecordTypeError{RecordType: params.Type}
 	}
 }
 
 // createRemoveRecordRequest creates an appropriate request structure based on record type.
+// According to reg.ru API documentation, remove_record uses subdomain, content, and record_type at request level.
 func createRemoveRecordRequest(zone string, rr DNSRecord) (APIRequest, error) {
-	domain := RemoveRecordDomain{
-		DName:     zone,
-		Subdomain: rr.Name,
-		Content:   rr.Content,
-	}
-
-	baseReq := RemoveRecordRequest{
+	// All record types use the same structure for removal
+	req := &RemoveRecordRequest{
 		BaseRequest: BaseRequest{},
-		Domains:     []RemoveRecordDomain{domain},
+		Domains: []RemoveRecordDomain{
+			{DName: zone},
+		},
+		Subdomain:  rr.Name,
+		Content:    rr.Content,
+		RecordType: rr.Type,
 	}
 
+	// All remove requests use the same structure, but we return typed requests for consistency
 	switch rr.Type {
-	case "A":
-		return &RemoveAliasRequest{RemoveRecordRequest: baseReq}, nil
-	case "AAAA":
-		return &RemoveAAAARequest{RemoveRecordRequest: baseReq}, nil
-	case "CNAME":
-		return &RemoveCNAMERequest{RemoveRecordRequest: baseReq}, nil
-	case "MX":
-		return &RemoveMXRequest{RemoveRecordRequest: baseReq}, nil
-	case "NS":
-		return &RemoveNSRequest{RemoveRecordRequest: baseReq}, nil
-	case "TXT":
-		return &RemoveTXTRequest{RemoveRecordRequest: baseReq}, nil
+	case RecordTypeA:
+		return &RemoveAliasRequest{RemoveRecordRequest: *req}, nil
+	case RecordTypeAAAA:
+		return &RemoveAAAARequest{RemoveRecordRequest: *req}, nil
+	case RecordTypeCNAME:
+		return &RemoveCNAMERequest{RemoveRecordRequest: *req}, nil
+	case RecordTypeMX:
+		return &RemoveMXRequest{RemoveRecordRequest: *req}, nil
+	case RecordTypeNS:
+		return &RemoveNSRequest{RemoveRecordRequest: *req}, nil
+	case RecordTypeTXT:
+		return &RemoveTXTRequest{RemoveRecordRequest: *req}, nil
 	default:
 		return nil, &UnsupportedRecordTypeError{RecordType: rr.Type}
 	}

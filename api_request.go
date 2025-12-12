@@ -40,6 +40,11 @@ type AddRecordDomain struct {
 	Content   string `json:"content"`
 }
 
+// AddAliasDomain represents a domain in add_alias requests (only dname).
+type AddAliasDomain struct {
+	DName string `json:"dname"`
+}
+
 // AddRecordRequest represents base structure for adding DNS records.
 type AddRecordRequest struct {
 	BaseRequest
@@ -48,47 +53,79 @@ type AddRecordRequest struct {
 }
 
 // AddNSRequest represents parameters for zone/add_ns API method.
+// For add_ns, dns_server and subdomain are at the request level, not in domains.
 type AddNSRequest struct {
-	AddRecordRequest
+	BaseRequest
+	Domains      []AddAliasDomain `json:"domains"`
+	Subdomain    string           `json:"subdomain"`
+	DNSServer    string           `json:"dns_server"`
+	RecordNumber string           `json:"record_number,omitempty"`
+	TTL          int              `json:"ttl,omitempty"`
 }
 
 // AddAliasRequest represents parameters for zone/add_alias API method (A records).
+// For add_alias, ipaddr and subdomain are at the request level, not in domains.
 type AddAliasRequest struct {
-	AddRecordRequest
+	BaseRequest
+	Domains   []AddAliasDomain `json:"domains"`
+	Subdomain string           `json:"subdomain"`
+	IPAddr    string           `json:"ipaddr"`
+	TTL       int              `json:"ttl,omitempty"`
 }
 
 // AddAAAARequest represents parameters for zone/add_aaaa API method.
+// For add_aaaa, ipaddr and subdomain are at the request level, not in domains.
 type AddAAAARequest struct {
-	AddRecordRequest
+	BaseRequest
+	Domains   []AddAliasDomain `json:"domains"`
+	Subdomain string           `json:"subdomain"`
+	IPAddr    string           `json:"ipaddr"`
+	TTL       int              `json:"ttl,omitempty"`
 }
 
 // AddCNAMERequest represents parameters for zone/add_cname API method.
+// For add_cname, canonical_name and subdomain are at the request level, not in domains.
 type AddCNAMERequest struct {
-	AddRecordRequest
+	BaseRequest
+	Domains       []AddAliasDomain `json:"domains"`
+	Subdomain     string           `json:"subdomain"`
+	CanonicalName string           `json:"canonical_name"`
+	TTL           int              `json:"ttl,omitempty"`
 }
 
 // AddMXRequest represents parameters for zone/add_mx API method.
+// For add_mx, mail_server and subdomain are at the request level, not in domains.
 type AddMXRequest struct {
-	AddRecordRequest
-	Priority int `json:"priority,omitempty"`
+	BaseRequest
+	Domains    []AddAliasDomain `json:"domains"`
+	Subdomain  string           `json:"subdomain"`
+	MailServer string           `json:"mail_server"`
+	TTL        int              `json:"ttl,omitempty"`
 }
 
 // AddTXTRequest represents parameters for zone/add_txt API method.
+// For add_txt, text and subdomain are at the request level, not in domains.
 type AddTXTRequest struct {
-	AddRecordRequest
+	BaseRequest
+	Domains   []AddAliasDomain `json:"domains"`
+	Subdomain string           `json:"subdomain"`
+	Text      string           `json:"text"`
+	TTL       int              `json:"ttl,omitempty"`
 }
 
 // RemoveRecordDomain represents a domain in remove record requests.
 type RemoveRecordDomain struct {
-	DName     string `json:"dname"`
-	Subdomain string `json:"subdomain"`
-	Content   string `json:"content"`
+	DName string `json:"dname"`
 }
 
 // RemoveRecordRequest represents base structure for removing DNS records.
+// For remove_record, subdomain, content, and record_type are at the request level.
 type RemoveRecordRequest struct {
 	BaseRequest
-	Domains []RemoveRecordDomain `json:"domains"`
+	Domains    []RemoveRecordDomain `json:"domains"`
+	Subdomain  string               `json:"subdomain"`
+	Content    string               `json:"content"`
+	RecordType string               `json:"record_type"`
 }
 
 // RemoveNSRequest represents parameters for zone/remove_ns API method.
