@@ -17,6 +17,16 @@ limitations under the License.
 // Package regru provides types for DNS zones and records.
 package regru
 
+// DNS record types
+const (
+	RecordTypeA     = "A"
+	RecordTypeAAAA  = "AAAA"
+	RecordTypeCNAME = "CNAME"
+	RecordTypeMX    = "MX"
+	RecordTypeNS    = "NS"
+	RecordTypeTXT   = "TXT"
+)
+
 // DNSRecord represents a DNS record in a zone.
 type DNSRecord struct {
 	Content string `json:"content,omitempty"`
